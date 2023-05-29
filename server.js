@@ -17,7 +17,40 @@ app.get('/', (req, res) => {
 });
 
 app.get('/freelancers', (req, res) => {
-    pool.query('SELECT * FROM public."skill"', (error, results) => {
+    pool.query('SELECT * FROM "freelancer" ', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(results.rows);
+    });
+});
+app.get('/customers', (req, res) => {
+    pool.query('SELECT * FROM "customer"', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(results.rows);
+    });
+});
+
+app.get('/contracts', (req, res) => {
+    pool.query('SELECT * FROM "contract"', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(results.rows);
+    });
+});
+app.get('/proposals', (req, res) => {
+    pool.query('SELECT * FROM "proposal"', (error, results) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(results.rows);
+    });
+});
+app.get('/jobs', (req, res) => {
+    pool.query('SELECT * FROM "job"', (error, results) => {
         if (error) {
             throw error;
         }
