@@ -15,6 +15,7 @@ const signin = (req, res) => {
                     'HSDIUFSDYFYF8923HDHDQYD81DHJQHWJD',
                     (err, token) => {
                         if (err) return res.sendStatus(403);
+                        res.cookie('token', token, { httpOnly: true });
                         res.json({ token });
                     },
                     {

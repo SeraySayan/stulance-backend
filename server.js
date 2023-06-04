@@ -1,9 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 const freelancerController = require('./controllers/freelancerController.js');
 const customerController = require('./controllers/customerController.js');
@@ -12,6 +16,15 @@ const proposalController = require('./controllers/proposalController.js');
 const jobController = require('./controllers/jobController.js');
 const skillController = require('./controllers/skillController.js');
 const authController = require('./controllers/authController.js');
+
+const protectedRoutes = (req, res, next) => {
+    const token = req.cookies.token;
+    if (token) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+};
 
 app.use(
     cors({
@@ -36,10 +49,11 @@ app.get('/proposals', proposalController.getProposals);
 
 /* TODO: /jobs/:id will fetch the job with the specific id */
 app.get('/jobs', jobController.getJobs);
+app.get('/jobs/:id', jobController.getJobById);
+app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
 
 app.put('/customer/:id', customerController.updatePostedJobs);
 
-/* TODO: /login /register */
 app.post('/login', authController.signin);
 app.post('/signup', authController.signup);
 
