@@ -1,62 +1,47 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 
 const app = express();
+app.use(express.json());
 
-const { Pool } = require('pg');
+const freelancerController = require('./controllers/freelancerController.js');
+const customerController = require('./controllers/customerController.js');
+const contractController = require('./controllers/contractController.js');
+const proposalController = require('./controllers/proposalController.js');
+const jobController = require('./controllers/jobController.js');
+const skillController = require('./controllers/skillController.js');
+const authController = require('./controllers/authController.js');
 
-const pool = new Pool({
-    connectionString:
-        'postgres://freelancer_app_db_user:VGwTWB2paJ95Tmnuw8qbsiGvOHBIPkvo@dpg-chnrh3e4dad6uianuitg-a.oregon-postgres.render.com/freelancer_app_db',
-    ssl: {
-        rejectUnauthorized: false,
-    },
-});
+app.use(
+    cors({
+        origin: 'http://localhost:3000',
+    })
+);
 
 app.get('/', (req, res) => {
     res.json({ info: 'Node.js, Express, and Postgres API' });
 });
 
-app.get('/freelancers', (req, res) => {
-    pool.query('SELECT * FROM "freelancer" ', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
-});
-app.get('/customers', (req, res) => {
-    pool.query('SELECT * FROM "customer"', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
-});
+/* FINISHED */
+app.get('/freelancers', freelancerController.getFreelancers);
+app.get('/skills', skillController.getSkills);
 
-app.get('/contracts', (req, res) => {
-    pool.query('SELECT * FROM "contract"', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
-});
-app.get('/proposals', (req, res) => {
-    pool.query('SELECT * FROM "proposal"', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
-});
-app.get('/jobs', (req, res) => {
-    pool.query('SELECT * FROM "job"', (error, results) => {
-        if (error) {
-            throw error;
-        }
-        res.status(200).json(results.rows);
-    });
-});
+/* TODO: /freelancers/:id will fetch the freelancer with the specific id */
+
+/* FIXME: */
+app.get('/customers', customerController.getCustomers);
+app.get('/contracts', contractController.getContracts);
+app.get('/proposals', proposalController.getProposals);
+
+/* TODO: /jobs/:id will fetch the job with the specific id */
+app.get('/jobs', jobController.getJobs);
+
+app.put('/customer/:id', customerController.updatePostedJobs);
+
+/* TODO: /login /register */
+app.post('/login', authController.signin);
+app.post('/signup', authController.signup);
 
 app.listen(8000, () => {
     console.log(`App running on port 8000.`);
