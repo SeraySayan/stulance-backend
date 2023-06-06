@@ -37,8 +37,15 @@ app.get('/', (req, res) => {
 });
 
 /* FINISHED */
+app.post('/login', authController.signin);
+app.post('/signup', authController.signup);
 app.get('/freelancers', freelancerController.getFreelancers);
+app.get('/myskills', skillController.getMySkills);
+app.post('/myskills', skillController.addMySkills);
+app.delete('/myskills', skillController.deleteMySkills);
 app.get('/skills', skillController.getSkills);
+app.post('/skills', skillController.addSkill);
+app.delete('/skills', skillController.deleteSkill);
 
 /* TODO: /freelancers/:id will fetch the freelancer with the specific id */
 
@@ -53,9 +60,6 @@ app.get('/jobs/:id', jobController.getJobById);
 app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
 
 app.put('/customer/:id', customerController.updatePostedJobs);
-
-app.post('/login', authController.signin);
-app.post('/signup', authController.signup);
 
 app.listen(8000, () => {
     console.log(`App running on port 8000.`);
