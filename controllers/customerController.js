@@ -2,7 +2,7 @@
 const pool = require('../db');
 
 const getCustomers = (req, res) => {
-    pool.query(`SELECT * FROM "User" `, (error, results) => {
+    pool.query(`SELECT * FROM "customer" c JOIN "User" u ON c.user_id = u.user_id `, (error, results) => {
         if (error) {
             throw error;
         }
