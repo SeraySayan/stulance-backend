@@ -40,25 +40,19 @@ app.get('/', (req, res) => {
 app.post('/login', authController.signin);
 app.post('/signup', authController.signup);
 app.get('/freelancers', freelancerController.getFreelancers);
-app.get('/myskills', skillController.getMySkills);
-app.post('/myskills', skillController.addMySkills);
-app.delete('/myskills', skillController.deleteMySkills);
-app.get('/skills', skillController.getSkills);
-app.post('/skills', skillController.addSkill);
-app.delete('/skills', skillController.deleteSkill);
-
-/* TODO: /freelancers/:id will fetch the freelancer with the specific id */
-
-/* FIXME: */
+app.get('/myskills', protectedRoutes, skillController.getMySkills);
+app.post('/myskills', protectedRoutes, skillController.addMySkills);
+app.delete('/myskills', protectedRoutes, skillController.deleteMySkills);
+app.get('/skills', protectedRoutes, skillController.getSkills);
+app.post('/skills', protectedRoutes, skillController.addSkill);
+app.delete('/skills', protectedRoutes, skillController.deleteSkill);
 app.get('/customers', customerController.getCustomers);
-app.get('/contracts', contractController.getContracts);
-app.get('/proposals', proposalController.getProposals);
-
-/* TODO: /jobs/:id will fetch the job with the specific id */
+app.get('/mycontracts', protectedRoutes, contractController.getContracts);
+app.get('/allcontracts', protectedRoutes, contractController.getAllContracts);
+app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
+app.get('/myproposals', protectedRoutes, proposalController.getProposals);
 app.get('/jobs', jobController.getJobs);
 app.get('/jobs/:id', jobController.getJobById);
-app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
-
 app.put('/customer/:id', customerController.updatePostedJobs);
 
 app.listen(8000, () => {
