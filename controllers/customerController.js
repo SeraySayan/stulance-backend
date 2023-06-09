@@ -22,8 +22,24 @@ const updatePostedJobs = (req, res) => {
         }
     );
 };
+const getCustomerProfile = (req, res) => {
+    console.log(req.user);
+    const email = req.user.email;
+    console.log(email);
+    pool.query(
+        `SELECT * FROM "customer" c JOIN "User" u ON c.user_id = u.user_id WHERE u.mail= $1`,
+        [email],
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+            res.status(200).json(results.rows);
+        }
+    );
+};
 
 module.exports = {
     getCustomers,
     updatePostedJobs,
+    getCustomerProfile,
 };

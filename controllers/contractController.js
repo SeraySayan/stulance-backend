@@ -1,31 +1,20 @@
 const pool = require('../db');
 const jwt = require('jsonwebtoken');
 const getContracts = (req, res) => {
-    const token = req.cookies.token;
-    if (!token) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-    }
-    jwt.verify(token, 'HSDIUFSDYFYF8923HDHDQYD81DHJQHWJD', (error, decodedToken) => {
+    const email = req.user.email;
+    pool.query(`SELECT user_type FROM "User" WHERE mail = $1`, [email], (error, results) => {
         if (error) {
-            res.status(401).json({ message: 'Invalid token' });
+            throw error;
+        }
+        if (results.rows.length === 0) {
+            res.status(404).json({ message: 'User not found' });
             return;
         }
-        const email = decodedToken.email;
-        pool.query(`SELECT user_type FROM "User" WHERE mail = $1`, [email], (error, results) => {
-            if (error) {
-                throw error;
-            }
-            if (results.rows.length === 0) {
-                res.status(404).json({ message: 'User not found' });
-                return;
-            }
-            if (results.rows[0].user_type === 'freelancer') {
-                getFreelancerContracts(email, res);
-            } else {
-                getCustomerContracts(email, res);
-            }
-        });
+        if (results.rows[0].user_type === 'freelancer') {
+            getFreelancerContracts(email, res);
+        } else {
+            getCustomerContracts(email, res);
+        }
     });
 };
 const getFreelancerContracts = (email, res) => {
@@ -69,6 +58,8 @@ const getCustomerContracts = (email, res) => {
     );
 };
 const getAllContracts = (req, res) => {
+    console.log(req.user);
+
     pool.query(`SELECT * FROM "contract" `, (error, results) => {
         if (error) {
             throw error;

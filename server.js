@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(express.json());
@@ -18,11 +19,28 @@ const skillController = require('./controllers/skillController.js');
 const authController = require('./controllers/authController.js');
 
 const protectedRoutes = (req, res, next) => {
-    const token = req.cookies.token;
-    if (token) {
-        next();
-    } else {
-        res.status(401).json({ message: 'Unauthorized' });
+    const authHeader = req.headers['authorization'];
+
+    //const token = authHeader?.split(' ')[1];
+    const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5bkBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjEyMzQ1NiIsImlhdCI6MTY4NjMzNjgzOH0.McK6iSVPV_3K8loz_guFm8g-BQXH7EPBp8FgPiKEaL8';
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    try {
+        jwt.verify(token, 'HSDIUFSDYFYF8923HDHDQYD81DHJQHWJD', (err, user) => {
+            if (err) {
+                return res.status(403).json({ message: 'Invalid token' });
+            }
+
+            req.user = user;
+
+            next();
+        });
+    } catch (err) {
+        return res.status(403).json({ message: 'Invalid token' });
     }
 };
 
@@ -44,7 +62,7 @@ app.get('/myskills', protectedRoutes, skillController.getMySkills);
 app.post('/myskills', protectedRoutes, skillController.addMySkills);
 app.delete('/myskills', protectedRoutes, skillController.deleteMySkills);
 app.get('/skills', protectedRoutes, skillController.getSkills);
-app.post('/skills', protectedRoutes, skillController.addSkill);
+app.post('/skills', skillController.addSkill);
 app.delete('/skills', protectedRoutes, skillController.deleteSkill);
 app.get('/customers', customerController.getCustomers);
 app.get('/mycontracts', protectedRoutes, contractController.getContracts);
@@ -53,8 +71,13 @@ app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
 app.get('/myproposals', protectedRoutes, proposalController.getProposals);
 app.get('/jobs', jobController.getJobs);
 app.get('/jobs/:id', jobController.getJobById);
-app.put('/customer/:id', customerController.updatePostedJobs);
 
+//app.get('/myprofile', protectedRoutes, freelancerController.getFreelancerProfile);
+app.get('/myprofile', protectedRoutes, customerController.getCustomerProfile);
+app.put('/customer/:id', customerController.updatePostedJobs);
+app.post('/logout', protectedRoutes, authController.logout);
+app.get('/proposal/:jobID', protectedRoutes, proposalController.getJobProposal);
+app.post('/job', protectedRoutes, jobController.addJob);
 app.listen(8000, () => {
     console.log(`App running on port 8000.`);
 });
