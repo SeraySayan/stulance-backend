@@ -8,6 +8,7 @@ const signin = (req, res) => {
         if (error) {
             throw error;
         }
+        console.log('test');
         if (results.rows.length !== 0) {
             if (results.rows[0].password === password) {
                 jwt.sign(
@@ -16,13 +17,16 @@ const signin = (req, res) => {
                     (err, token) => {
                         if (err) return res.sendStatus(403);
                         res.cookie('token', token, { httpOnly: true });
-                        res.json({ token });
+                        const userType = results.rows[0].user_type;
+                        res.json({ token: token, userType });
                     },
                     {
                         expriesIn: '1h',
                     }
                 );
             }
+        } else {
+            res.status(401).json('User does not exist');
         }
     });
 };
@@ -51,8 +55,19 @@ const signup = (req, res) => {
         }
     });
 };
+const logout = (req, res) => {
+    console.log('logout');
+    console.log(req.cookies.token);
+    // Destroy the token
+    res.clearCookie('token');
+    console.log(req.cookies.token);
+
+    // Return a success response
+    res.status(200).json({ message: 'Logout successful' });
+};
 
 module.exports = {
     signin,
     signup,
+    logout,
 };
