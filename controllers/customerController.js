@@ -23,6 +23,7 @@ const updatePostedJobs = (req, res) => {
     );
 };
 const getCustomerProfile = (req, res) => {
+    console.log('getCustomerProfile');
     console.log(req.user);
     const email = req.user.email;
     console.log(email);

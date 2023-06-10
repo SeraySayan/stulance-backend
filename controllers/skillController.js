@@ -84,7 +84,7 @@ const deleteSkill = (req, res) => {
 };
 
 const getSkills = (req, res) => {
-    pool.query(`SELECT * FROM "skill"`, (error, results) => {
+    pool.query(`SELECT skill_name FROM "skill"`, (error, results) => {
         if (error) {
             throw error;
         }
