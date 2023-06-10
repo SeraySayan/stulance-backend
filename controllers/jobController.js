@@ -36,10 +36,6 @@ const getMyJobs = (req, res) => {
             if (error) {
                 throw error;
             }
-            if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Job not found' });
-                return;
-            }
 
             console.log(results.rows);
             res.status(200).json(results.rows);
@@ -63,10 +59,31 @@ const addJob = (req, res) => {
         }
     );
 };
+const getProposalJob = (req, res) => {
+    const proposalID = req.params.proposalID;
+    console.log(proposalID);
+    pool.query(
+        `SELECT *
+    FROM "job" j
+    JOIN "proposal" p ON p.job_id = j.job_id  
+    JOIN "User" u ON j.customer_id = u.user_id 
+    WHERE p.proposal_id = $1`,
+        [proposalID],
+        (error, results) => {
+            if (error) {
+                throw error;
+            }
+
+            console.log(results.rows);
+            res.status(200).json(results.rows);
+        }
+    );
+};
 
 module.exports = {
     getJobs,
     getJobById,
     getMyJobs,
     addJob,
+    getProposalJob,
 };

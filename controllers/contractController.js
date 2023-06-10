@@ -28,10 +28,7 @@ const getFreelancerContracts = (email, res) => {
             if (error) {
                 throw error;
             }
-            if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Contracts not found' });
-                return;
-            }
+
             console.log(results.rows);
             res.status(200).json(results.rows);
         }
@@ -48,10 +45,7 @@ const getCustomerContracts = (email, res) => {
             if (error) {
                 throw error;
             }
-            if (results.rows.length === 0) {
-                res.status(404).json({ message: 'Contracts not found' });
-                return;
-            }
+
             console.log(results.rows);
             res.status(200).json(results.rows);
         }

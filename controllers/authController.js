@@ -8,16 +8,16 @@ const signin = (req, res) => {
         if (error) {
             throw error;
         }
-        console.log('test');
+        const userType = results.rows[0].user_type;
+        console.log('usertype', userType);
         if (results.rows.length !== 0) {
             if (results.rows[0].password === password) {
                 jwt.sign(
-                    { email: email, password: password },
+                    { email, password, userType },
                     'HSDIUFSDYFYF8923HDHDQYD81DHJQHWJD',
                     (err, token) => {
                         if (err) return res.sendStatus(403);
                         res.cookie('token', token, { httpOnly: true });
-                        const userType = results.rows[0].user_type;
                         res.json({ token: token, userType });
                     },
                     {

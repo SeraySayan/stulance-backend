@@ -21,9 +21,7 @@ const authController = require('./controllers/authController.js');
 const protectedRoutes = (req, res, next) => {
     const authHeader = req.headers['authorization'];
 
-    //const token = authHeader?.split(' ')[1];
-    const token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN5bkBnbWFpbC5jb20iLCJwYXNzd29yZCI6IjEyMzQ1NiIsImlhdCI6MTY4NjMzNjgzOH0.McK6iSVPV_3K8loz_guFm8g-BQXH7EPBp8FgPiKEaL8';
+    const token = authHeader?.split(' ')[1];
 
     if (!token) {
         return res.status(401).json({ message: 'No token provided' });
@@ -70,10 +68,14 @@ app.get('/allcontracts', protectedRoutes, contractController.getAllContracts);
 app.get('/myjobs', protectedRoutes, jobController.getMyJobs);
 app.get('/myproposals', protectedRoutes, proposalController.getProposals);
 app.get('/jobs', jobController.getJobs);
-app.get('/jobs/:id', jobController.getJobById);
+app.get('/job/:proposalID', jobController.getProposalJob);
+app.post('/sendproposal/:jobID', protectedRoutes, proposalController.addProposal);
 
-//app.get('/myprofile', protectedRoutes, freelancerController.getFreelancerProfile);
-app.get('/myprofile', protectedRoutes, customerController.getCustomerProfile);
+app.get('/myprofile', protectedRoutes, (req, res) => {
+    req.user.userType === 'freelancer'
+        ? freelancerController.getFreelancerProfile(req, res)
+        : customerController.getCustomerProfile(req, res);
+});
 app.put('/customer/:id', customerController.updatePostedJobs);
 app.post('/logout', protectedRoutes, authController.logout);
 app.get('/proposal/:jobID', protectedRoutes, proposalController.getJobProposal);
